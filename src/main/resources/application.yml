@@ -1,0 +1,7 @@
+server:
+  port: 9596
+amazonProperties:
+  endpointUrl: https://s3.us-east-2.amazonaws.com
+  accessKey: XXXXXX
+  secretKey: XXXXXX
+  bucketName: XXXXXX

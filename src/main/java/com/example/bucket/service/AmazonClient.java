@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import java.util.Date;
 @Service
 public class AmazonClient {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
     private AmazonS3 s3client;
 
     @Value("${amazonProperties.endpointUrl}")
@@ -36,28 +38,27 @@ public class AmazonClient {
     @Value("${amazonProperties.secretKey}")
     private String secretKey;
 
-    @PostConstruct
+    /*@PostConstruct
     private void initializeAmazon() {
         AWSCredentials credentials = new BasicAWSCredentials(this.accessKey, this.secretKey);
-        /*this.s3client = AmazonS3ClientBuilder
+        *//*this.s3client = AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(Regions.US_EAST_2)
-                .build();*/
+                .build();*//*
         this.s3client = new AmazonS3Client(credentials);
-    }
+    }*/
 
     public String uploadFile() {
         String fileUrl = "";
         try {
             String fileName = generateFileName();
-            String data = "{\n" +
-                                "\t\"id\": \"12222\",\n" +
-                                "\t\"name\": \"Adam\"\n" +
-                            "}";
+            Data data = new Data();
+            data.setId("1234");
+            data.setName("Adam");
 
             File file = new File(fileName);
-            FileUtils.writeStringToFile(file, data, Charset.defaultCharset(), false);
+            FileUtils.writeStringToFile(file, mapper.writeValueAsString(data), Charset.defaultCharset(), false);
 
             fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
             uploadFileTos3bucket(fileName, file);
